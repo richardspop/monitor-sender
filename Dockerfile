@@ -12,4 +12,6 @@ WORKDIR /root/monitor_sender
 COPY install-dependencies.sh /root/monitor_sender/install-dependencies.sh
 RUN /root/monitor_sender/install-dependencies.sh
 
+EXPOSE 5555
+
 ENTRYPOINT /root/monitor_sender/monitor_sender
