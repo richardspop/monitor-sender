@@ -19,3 +19,8 @@ docker build -t 10.157.1.216:5000/monitor-sender:$1 .
 docker push 10.157.1.216:5000/monitor-sender:$1
 
 docker rmi -f 10.157.1.216:5000/monitor-sender:$1
+
+rm -rf CMakeFiles
+rm -rf cppzmq  
+rm -rf libzmq 
+rm -rf nlohmann
