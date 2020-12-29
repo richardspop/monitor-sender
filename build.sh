@@ -14,5 +14,6 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io
 
-docker build -t monitor-sender:v1 .
+docker build -t 10.157.1.216:5000/monitor-sender:$1 .
 
+docker push 10.157.1.216:5000/monitor-sender:$1
