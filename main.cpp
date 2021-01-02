@@ -12,7 +12,7 @@ int main() {
 
     ServerFactoryImpl * serverFactory = ServerFactoryImpl::GetServerFactoryInstance();
     ServerFactory * server = serverFactory->CreateServer("zmq", cpuStat, memStat);
-    server->Serve("tcp://*:5555", 1);
+    server->Serve("tcp://*:5555");
     std::cout << "Monitor-sender exited" << std::endl;
     return 0;
 }

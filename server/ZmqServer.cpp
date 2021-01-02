@@ -8,12 +8,15 @@ ZMQServer::ZMQServer(AbstractStatInterface * cpuStats, AbstractStatInterface * m
     std::cout << "ZMQ Server Created" << std::endl;
     ZMQServer::cpuStats = cpuStats;
     ZMQServer::memStats = memStats;
+    char host[HOST_NAME_MAX];
+    gethostname(host, HOST_NAME_MAX);
+    hostname["host"] = host;
+
 }
 
-void ZMQServer::Serve(std::string bindAddress, int statCollationTimer) {
+void ZMQServer::Serve(std::string bindAddress) {
     using namespace std::chrono_literals;
 
-    std::chrono::seconds dur(statCollationTimer);
     zmq::context_t context{1};
 
     zmq::socket_t socket{context, zmq::socket_type::rep};
@@ -24,12 +27,9 @@ void ZMQServer::Serve(std::string bindAddress, int statCollationTimer) {
 
         socket.recv(request, zmq::recv_flags::none);
         std::cout << "Received " << request.to_string() << std::endl;
-        std::this_thread::sleep_for(dur);
 
-        nlohmann::json cpuJson = nlohmann::json::parse(cpuStats->getCPUUsage());
-        nlohmann::json memJson = nlohmann::json::parse(memStats->getMemoryUsage());
-
-        cpuJson.merge_patch(memJson);
-        socket.send(zmq::buffer(cpuJson.dump()), zmq::send_flags::none);
+        hostname.merge_patch(nlohmann::json::parse(cpuStats->getCPUUsage()));
+        hostname.merge_patch(nlohmann::json::parse(memStats->getMemoryUsage()));
+        socket.send(zmq::buffer(hostname.dump()), zmq::send_flags::none);
     }
 }

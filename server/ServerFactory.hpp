@@ -10,7 +10,7 @@
 
 class ServerFactory {
 public:
-    virtual void Serve(std::string bindAddress, int statCollationTimer) = 0;
+    virtual void Serve(std::string bindAddress) = 0;
 };
 
 

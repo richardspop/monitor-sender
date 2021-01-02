@@ -12,16 +12,19 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <unistd.h>
+#include <limits.h>
 
 #include <zmq.hpp>
 
 class ZMQServer: public ServerFactory{
 private:
+    nlohmann::json hostname;
     AbstractStatInterface * cpuStats;
     AbstractStatInterface * memStats;
 public:
     ZMQServer(AbstractStatInterface * cpuStats, AbstractStatInterface * memStats);
-    void Serve(std::string bindAddress, int statCollationTimer);
+    void Serve(std::string bindAddress);
 };
 
 
