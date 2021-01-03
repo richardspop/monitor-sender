@@ -1,0 +1,28 @@
+@startuml
+Main -> CPUStatImpl: CPUStatImpl(statSource)
+alt /proc/stat
+    CPUStatImpl -> CPUProcStat: CPUProcStat()
+    CPUStatImpl -> CPUProcStat: StartMonitoring()
+    CPUProcStat -> CPUProcStat: thread().detach()
+    loop forever
+    CPUProcStat -> CPUProcStat: UpdateCPUStats()
+    CPUProcStat -> CPUProcStat: Sleep(interval)
+    end
+else top
+    CPUStatImpl -> CPUTopStat: CPUTopStat()
+else sysstat
+    CPUStatImpl -> CPUSysstatStat: CPUSysstatStat()
+end
+CPUStatImpl --> Main: AbstractStatImplInterface * Instance
+
+Main -> MEMStatImpl: MEMStatImpl(statSource)
+alt sysconf
+    MEMStatImpl -> MEMSysconf: MEMSysconf()
+else /proc/meminfo
+    MEMStatImpl -> MEMinfo: MEMinfo()
+else vmstat
+    MEMStatImpl -> MEMVmstat: MEMVmstat()
+end
+MEMStatImpl --> Main: AbstractStatInterface * Instance
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+Main -> CPUStatImpl: CPUStatImpl("procstat")
+alt procstat
+    CPUStatImpl -> CPUProcStat: CPUProcStat()
+    CPUStatImpl -> CPUProcStat: StartMonitoring()
+    CPUProcStat -> CPUProcStat: thread().detach()
+        loop forever
+        CPUProcStat -> CPUProcStat: UpdateCPUStats()
+        CPUProcStat -> CPUProcStat: fstream.open("/proc/stat")
+        CPUProcStat -> CPUProcStat: Sleep(1)
+        end
+end
+CPUStatImpl --> Main: AbstractStatInterface * cpuStat
+
+Main -> MEMStatImpl: MEMStatImpl("sysconf")
+alt sysconf
+    MEMStatImpl -> MEMSysconf: MEMSysconf()
+end
+MEMStatImpl --> Main: AbstractStatInterface * memStat
+
+Main -> ServerFactoryImpl: GetServerFactoryInstance()
+ServerFactoryImpl --> Main: ServerFactoryImpl * serverFactory
+
+Main -> ServerFactoryImpl: CreateServer("zmq", cpuStats, memStats)
+alt zmq
+    ServerFactoryImpl -> ZMQServer: ZMQServer(cpuStats, memStats)
+    ZMQServer -> ZMQServer: gethostname()
+end
+ServerFactoryImpl --> Main: ServerFactory * zmqServer
+Main -> ZMQServer: Serve("tcp://*:5555")
+loop forever
+    ZMQServer -> ZMQServer: zmq.socket.bin()
+    alt accept ZMQ request
+    ZMQServer -> CPUStatImpl: getCPUUsage()
+    CPUStatImpl -> CPUProcStat: getStats()
+    CPUProcStat -->  ZMQServer: CPU usage in json
+    ZMQServer -> MEMStatImpl: getMemoryUsage()
+    MEMStatImpl -> MEMSysconf: getStats()
+    MEMSysconf -> MEMSysconf: sysconf()
+    MEMSysconf -->  ZMQServer: Memory usage in json
+    ZMQServer -> ZMQServer: Create json reply
+    ZMQServer -> ZMQServer: zmq.socket.send(reply)
+end
+
+@enduml

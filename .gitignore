@@ -12,6 +12,7 @@ _deps
 libzmq
 cppzmq
 cmake-build-debug
-monitor_sender*
+monitor_sender
+monitor_sender.cbp
 .idea
 nlohmann

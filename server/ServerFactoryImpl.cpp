@@ -9,6 +9,7 @@ ServerFactoryImpl::ServerFactoryImpl() {
 }
 
 ServerFactoryImpl * ServerFactoryImpl::GetServerFactoryInstance() {
+    // Singleton instance to control the creation of server objects
     if (!instance)
         instance = new ServerFactoryImpl();
     std::cout << "ServerFactoryImpl instance returned" << std::endl;

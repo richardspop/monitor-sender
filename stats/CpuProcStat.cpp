@@ -15,7 +15,7 @@ std::string CPUProcStat::getStats() {
 
 void CPUProcStat::StartMonitoring() {
     std::cout << "Monitoring started" << std::endl;
-    //timer_start(UpdateCPUStats, 1);
+    // Lambda function to start monitoring /proc/stat stats.
     auto f = [this](int interval) {
         while (true) {
             UpdateCPUStats();
@@ -35,6 +35,7 @@ void CPUProcStat::UpdateCPUStats() {
     float cpu;
     nlohmann::json j;
 
+    // Read from /proc/stat
     ifstream statFile(procStatPath);
 
     if (statFile.good()) {
@@ -48,11 +49,7 @@ void CPUProcStat::UpdateCPUStats() {
         vStats.push_back(temp);
     }
 
-//    cout << "print Vector" << endl;
-//    for(int i = 0; i < vStats.size(); i++) {
-//        cout << vStats[i] << endl;
-//    }
-
+    // Current ticks = total of all ticks in the system
     unsigned long currTotalTicks = std::stoi(vStats[USER_TICK]) +
                                    std::stoi(vStats[NICE_TICK]) +
                                    std::stoi(vStats[SYS_TICK]) +
@@ -64,16 +61,21 @@ void CPUProcStat::UpdateCPUStats() {
                                    std::stoi(vStats[GUEST_TICK]) +
                                    std::stoi(vStats[GUEST_NICE_TICK]);
 
+    // CPU usage = total of ticks from user, process and system
     unsigned long currWorkTicks = std::stoi(vStats[USER_TICK]) +
                                   std::stoi(vStats[NICE_TICK]) +
                                   std::stoi(vStats[SYS_TICK]);
 
+    // The ticks in /proc/stats are only current usage. to identify change,
+    // we need historical values. so storing current values for next calculation
     unsigned long prevTotalTicks = totalTicks;
     unsigned long prevWorkTicks = workTicks;
 
     totalTicks = currTotalTicks;
     workTicks = currWorkTicks;
 
+    // the stats are int values and can rotate over INT_MAX
+    // Handling the rotation can be performed with long values
     if (prevTotalTicks > currTotalTicks) {
         cout << "CPU totalTicks looped" << endl;
         currTotalTicks += prevTotalTicks;
@@ -83,15 +85,17 @@ void CPUProcStat::UpdateCPUStats() {
         currWorkTicks += prevWorkTicks;
     }
 
+    // We need at least 1 historical data to calculate cpu usage.
     if (prevTotalTicks == 0 && prevWorkTicks == 0) {
         cout << "First time update" << endl;
     } else {
+        // Since we are taking percentile, no need to convert ticks to seconds.
+        // Calculating the cpu usage over the give monitoring time.
         //cout << currWorkTicks << ", " << prevWorkTicks << ", " << currTotalTicks << ", " << prevTotalTicks << endl;
         cpu = ( (float) (currWorkTicks - prevWorkTicks) / (float) (currTotalTicks - prevTotalTicks) ) * 100;
     }
 
+    // Update cpu usage
     j["cpu"] = cpu;
     cpuStats = j.dump();
-    //cout << "updating cpuStats - " << cpuStats << endl;
-
 }

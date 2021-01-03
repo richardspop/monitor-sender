@@ -24,6 +24,8 @@ private:
     unsigned long totalTicks = 0;
     unsigned long workTicks = 0;
 
+    // Stats in /proc/stat are ordered with the below constant spacing.
+    // More info : https://linux.die.net/man/5/proc
     const unsigned int USER_TICK = 2;
     const unsigned int NICE_TICK = 3;
     const unsigned int SYS_TICK = 4;

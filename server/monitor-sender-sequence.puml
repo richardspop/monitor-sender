@@ -1,0 +1,14 @@
+@startuml
+Main -> ServerFactoryImpl: GetServerFactoryInstance()
+ServerFactoryImpl --> Main: ServerFactoryImpl *Instance
+Main -> ServerFactoryImpl: CreateServer(serverType, cpuStats, memStats)
+alt ZMQ Server
+ServerFactoryImpl -> ZMQServer: new ZMQServer()
+else HTTP Server
+ServerFactoryImpl -> HTTPServer: new HTTPServer()
+else GRPC Server
+ServerFactoryImpl -> GRPCServer: new GRPCServer()
+end
+
+ServerFactoryImpl --> Main: ServerFactory *Instance
+@enduml

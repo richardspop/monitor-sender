@@ -7,6 +7,7 @@
 
 #include <string>
 
+// Interface to get stats from various sources
 class AbstractStatInterface {
 public:
     virtual std::string getCPUUsage() = 0;

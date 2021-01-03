@@ -1,0 +1,50 @@
+@startuml
+
+interface AbstractStatImplInterface {
+    getStats()
+    StartMonitoring()
+}
+
+interface AbstractStatInterface {
+    getCPUUsage()
+    getMemoryUsage()
+}
+
+class CPUProcStat {
+    - string procStatPath
+    - string cpuStats
+    - UpdateCPUStats()
+    CPUProcStat()
+    getStats()
+    StartMonitoring()
+}
+
+class MEMSysconf {
+    MEMSysconf()
+    getStats()
+    StartMonitoring()
+}
+
+class CPUStatImpl {
+    - AbstractStatImplInterface * statImpl
+    CPUStatImpl(string statSource)
+    getCPUUsage()
+    getMemoryUsage()
+}
+
+class MEMStatImpl {
+    - AbstractStatImplInterface * statImpl
+    MEMStatImpl(string statSource)
+    getCPUUsage()
+    getMemoryUsage()
+}
+
+AbstractStatImplInterface <|-- CPUProcStat
+AbstractStatImplInterface <|-- MEMSysconf
+AbstractStatInterface <|-- CPUStatImpl
+AbstractStatInterface <|-- MEMStatImpl
+
+CPUStatImpl *-- CPUProcStat
+MEMStatImpl *-- MEMSysconf
+
+@enduml

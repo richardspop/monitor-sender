@@ -5,6 +5,7 @@
 #include "MemStatImpl.hpp"
 
 MEMStatImpl::MEMStatImpl(std::string statSource) {
+    // Check and create the Stats implementation based on source
     if (statSource == "sysconf") {
         statImpl = new MEMSysconf();
     } else {
@@ -14,6 +15,7 @@ MEMStatImpl::MEMStatImpl(std::string statSource) {
 }
 
 std::string MEMStatImpl::getCPUUsage() {
+    // Unsupported API
     std::cout << "Unsupported method MEMStatImpl::getCPUUsage()" << std::endl;
 }
 

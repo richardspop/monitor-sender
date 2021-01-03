@@ -1,0 +1,20 @@
+@startuml
+
+interface ServerFactory {
+    Serve(string bindAddress)
+}
+class ServerFactoryImpl {
+    GetServerFactoryInstance()
+    CreateServer(std::string serverType, AbstractStatInterface * cpuStats, AbstractStatInterface * memStats)
+}
+class ZMQServer {
+    - nlohmann::json hostname;
+    - AbstractStatInterface * cpuStats;
+    - AbstractStatInterface * memStats;
+    ZMQServer(AbstractStatInterface * cpuStats, AbstractStatInterface * memStats)
+    Serve(string bindAddress)
+}
+
+ServerFactory <|-- ZMQServer
+
+@enduml

@@ -7,6 +7,7 @@
 
 #include <string>
 
+// Interface for Implementation to Query stats
 class AbstractStatImplInterface {
 public:
     virtual std::string getStats() = 0;
